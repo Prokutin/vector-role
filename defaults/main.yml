@@ -1,0 +1,23 @@
+---
+# Версия Vector, которую устанавливаем
+vector_version: "0.34.1"
+
+# Каталог, куда распаковывается дистрибутив
+vector_install_dir: "/opt"
+
+# Каталог для скачивания архива на целевом хосте
+vector_download_dir: "/tmp"
+
+# Каталоги конфигурации и данных Vector
+vector_config_dir: "/etc/vector"
+vector_data_dir: "/var/lib/vector"
+
+# Файлы, которые Vector читает и отправляет в ClickHouse
+vector_log_paths:
+  - "/var/log/*.log"
+
+# Куда Vector пишет логи: HTTP-интерфейс ClickHouse.
+# По умолчанию берётся внутренний адрес хоста из группы clickhouse (инвентарь terraform)
+vector_clickhouse_endpoint: "http://{{ hostvars['clickhouse'].internal_ip }}:8123"
+vector_clickhouse_database: "logs"
+vector_clickhouse_table: "vector_logs"

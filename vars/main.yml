@@ -1,0 +1,14 @@
+---
+# Значения, которые зависят от версии и платформы, менять через defaults не предполагается
+
+# Имя каталога внутри архива (дистрибутив x86_64, Linux GNU)
+vector_archive_dir: "vector-x86_64-unknown-linux-gnu"
+
+vector_download_url: "https://packages.timber.io/vector/{{ vector_version }}/vector-{{ vector_version }}-x86_64-unknown-linux-gnu.tar.gz"
+vector_archive: "{{ vector_download_dir }}/vector-{{ vector_version }}.tar.gz"
+
+# Исполняемый файл после распаковки и символическая ссылка в PATH
+vector_bin_source: "{{ vector_install_dir }}/{{ vector_archive_dir }}/bin/vector"
+vector_bin_path: "/usr/local/bin/vector"
+
+vector_service_name: "vector"

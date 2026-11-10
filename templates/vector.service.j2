@@ -1,0 +1,14 @@
+# Managed by Ansible. Manual changes will be overwritten.
+[Unit]
+Description=Vector log pipeline
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart={{ vector_bin_path }} --config {{ vector_config_dir }}/vector.yaml
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+KillSignal=SIGINT
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,21 @@
+# Managed by Ansible. Manual changes will be overwritten.
+data_dir: {{ vector_data_dir }}
+
+sources:
+  logs_in:
+    type: file
+    include:
+{% for path in vector_log_paths %}
+      - {{ path }}
+{% endfor %}
+    read_from: beginning
+
+sinks:
+  clickhouse_out:
+    type: clickhouse
+    inputs:
+      - logs_in
+    endpoint: "{{ vector_clickhouse_endpoint }}"
+    database: {{ vector_clickhouse_database }}
+    table: {{ vector_clickhouse_table }}
+    skip_unknown_fields: true

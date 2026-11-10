@@ -1,0 +1,69 @@
+---
+- name: Download Vector distribution
+  ansible.builtin.get_url:
+    url: "{{ vector_download_url }}"
+    dest: "{{ vector_archive }}"
+    mode: "0644"
+  check_mode: false
+  tags: [vector_install]
+
+- name: Ensure Vector install directory exists
+  ansible.builtin.file:
+    path: "{{ vector_install_dir }}"
+    state: directory
+    mode: "0755"
+  tags: [vector_install]
+
+- name: Unpack Vector distribution
+  ansible.builtin.unarchive:
+    src: "{{ vector_archive }}"
+    dest: "{{ vector_install_dir }}"
+    remote_src: true
+    creates: "{{ vector_bin_source }}"
+  tags: [vector_install]
+
+# В --check распаковка пропущена, и цель ссылки не существует: пропускаем проверку только здесь
+- name: Link Vector binary into PATH
+  ansible.builtin.file:
+    src: "{{ vector_bin_source }}"
+    dest: "{{ vector_bin_path }}"
+    state: link
+  when: not ansible_check_mode
+  tags: [vector_install]
+
+- name: Ensure Vector config and data directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ vector_config_dir }}"
+    - "{{ vector_data_dir }}"
+  tags: [vector_config]
+
+- name: Deploy Vector config
+  ansible.builtin.template:
+    src: vector.yaml.j2
+    dest: "{{ vector_config_dir }}/vector.yaml"
+    mode: "0644"
+  notify: Restart vector
+  tags: [vector_config]
+
+- name: Deploy Vector systemd unit
+  ansible.builtin.template:
+    src: vector.service.j2
+    dest: "/etc/systemd/system/{{ vector_service_name }}.service"
+    mode: "0644"
+  notify:
+    - Reload systemd
+    - Restart vector
+  tags: [vector_config]
+
+# В --check unit-файл не установлен, поэтому сервис не запускаем
+- name: Enable and start Vector
+  ansible.builtin.service:
+    name: "{{ vector_service_name }}"
+    state: started
+    enabled: true
+  when: not ansible_check_mode
+  tags: [vector_service]

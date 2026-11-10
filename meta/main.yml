@@ -1,0 +1,19 @@
+---
+galaxy_info:
+  role_name: vector_role
+  author: Прокутин ДВ
+  description: Установка Vector (сбор логов) из архива и настройка systemd-сервиса с отправкой в ClickHouse
+  license: MIT
+  min_ansible_version: "2.12"
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - jammy
+
+  galaxy_tags:
+    - vector
+    - logs
+    - clickhouse
+
+dependencies: []
